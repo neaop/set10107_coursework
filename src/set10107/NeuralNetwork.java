@@ -8,7 +8,7 @@ public class NeuralNetwork {
     protected int numHidden;
     protected int numOutput;
     protected double[] inputs;
-    protected double[][] ihWeights;
+    protected double[][]     ihWeights;
     protected double[] hBiases;
     protected double[] hOutputs;
     protected double[][] hoWeights;
