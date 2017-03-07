@@ -1,6 +1,8 @@
 package set10107;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 public class EvolutionaryTrainer extends NeuralNetwork {
 
@@ -14,10 +16,10 @@ public class EvolutionaryTrainer extends NeuralNetwork {
         Parameters.setDataSet(dataSet);
 
         System.out.println("\nThe training data is:");
-        showMatrix(Parameters.trainData, Parameters.trainData.length, 1, true);
+//        showMatrix(Parameters.trainData, Parameters.trainData.length, 1, true);
 
         System.out.println("The test data is:");
-        showMatrix(Parameters.testData, Parameters.testData.length, 1, true);
+//        showMatrix(Parameters.testData, Parameters.testData.length, 1, true);
 
         /**
          * train the NN using our EA
@@ -31,7 +33,7 @@ public class EvolutionaryTrainer extends NeuralNetwork {
          */
         System.out.println("Training complete");
         System.out.println("\nFinal weights and bias values:");
-        showVector(bestWeights, 10, 3, true);
+//        showVector(bestWeights, 10, 3, true);
 
         /**
          * Show accuracy on training data
@@ -75,8 +77,8 @@ public class EvolutionaryTrainer extends NeuralNetwork {
              */
 
             //Select 2 good Individuals
-            Individual parent1 = select(population); // 2 good Individuals
-            Individual parent2 = select(population);
+            Individual parent1 = selectBogo(population); // 2 good Individuals
+            Individual parent2 = selectBogo(population);
 
             //Generate 2 new children by crossover (includes call to mutation)
             Individual[] children = reproduce(parent1, parent2);
@@ -94,7 +96,7 @@ public class EvolutionaryTrainer extends NeuralNetwork {
             //check that the best hasn't improved
             bestIndividual = getBest(population);
 
-            System.out.println(gen + "\t" + bestIndividual);
+//            System.out.println(gen + "\t" + bestIndividual);
 
             //check our termination criteria
             if (bestIndividual.error < Parameters.exitError) {
@@ -151,12 +153,44 @@ public class EvolutionaryTrainer extends NeuralNetwork {
      * NEEDS REPLACED with proper selection
      * this just returns a copy of a random member of the population
      */
-    private Individual select(Individual[] population) {
+    private Individual selectBogo(Individual[] population) {
         int popSize = population.length;
         Individual parent = population[Parameters.random.nextInt(popSize)].copy();
         return parent;
     }
 
+    private Individual selectElite(Individual[] population, int index) {
+        Arrays.sort(population);
+        return population[index].copy();
+    }
+
+    private Individual selectTournament(Individual[] population, int tournamentSize) {
+        int popSize = population.length;
+        ArrayList<Individual> tournament = new ArrayList<>();
+        for (int i = 0; i < tournamentSize; ++i) {
+            tournament.add(population[Parameters.random.nextInt(popSize)].copy());
+        }
+        Collections.sort(tournament);
+        return tournament.get(0).copy();
+    }
+
+    private Individual selectRoulette(Individual[] population) {
+        double errorSum = 0;
+        int chosenIndex = population.length - 1;
+        Arrays.sort(population);
+
+        for (Individual ind : population) {
+            errorSum += ind.error;
+        }
+        double randomValue = Parameters.random.nextDouble() * errorSum;
+        for (int i = 0; i < population.length; ++i) {
+            randomValue -= population[i].error;
+            if (randomValue <= 0) {
+                chosenIndex = i;
+            }
+        }
+        return population[chosenIndex].copy();
+    }
 
     /**
      * Crossover / Reproduction
