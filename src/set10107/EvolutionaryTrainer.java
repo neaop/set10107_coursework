@@ -86,7 +86,6 @@ public class EvolutionaryTrainer extends NeuralNetwork {
             //Evaluate the new individuals
             evaluateIndividuals(children);
 
-
             //Replace (sorts the population and replaces the two worst individuals)
             replace(children[0], children[1], population);
 
@@ -102,25 +101,18 @@ public class EvolutionaryTrainer extends NeuralNetwork {
             if (bestIndividual.error < Parameters.exitError) {
                 done = true;
             }
-
             ++gen;
         }
         return bestIndividual.chromosome;
     } // Train
 
 
-    /**
-     * Sets the fitness (mean squared error) of the individual passed as parameters
-     */
     private void evaluateIndividuals(Individual[] individuals) {
         for (Individual individual : individuals) {
             individual.error = meanSquaredError(Parameters.trainData, individual.chromosome);
         }
     }
 
-    /**
-     * Returns the individual with the lowest error (best fitness) from the array passed
-     */
     private Individual getBest(Individual[] population) {
         Individual bestIndividual = null;
         for (Individual individual : population) {
@@ -133,9 +125,6 @@ public class EvolutionaryTrainer extends NeuralNetwork {
         return bestIndividual;
     }
 
-    /**
-     * Generates a randomly initialised population
-     */
     private Individual[] initialise() {
         Individual[] population = new Individual[Parameters.popSize];
         for (int i = 0; i < population.length; ++i) {
@@ -146,13 +135,6 @@ public class EvolutionaryTrainer extends NeuralNetwork {
         return population;
     }
 
-
-    /**
-     * Selection --
-     * <p>
-     * NEEDS REPLACED with proper selection
-     * this just returns a copy of a random member of the population
-     */
     private Individual selectBogo(Individual[] population) {
         int popSize = population.length;
         Individual parent = population[Parameters.random.nextInt(popSize)].copy();
@@ -192,15 +174,101 @@ public class EvolutionaryTrainer extends NeuralNetwork {
         return population[chosenIndex].copy();
     }
 
-    /**
-     * Crossover / Reproduction
-     * <p>
-     * NEEDS REPLACED with proper method
-     * this code just returns exact copies of the parents
-     */
-    private Individual[] reproduce(Individual parent1, Individual parent2) {
+    private Individual[] crossoverSingle(Individual parent1, Individual parent2) {
         int numGenes = parent1.chromosome.length;
         int cross = Parameters.random.nextInt(numGenes);
+
+        Individual child1 = new Individual();
+        Individual child2 = new Individual();
+
+        for (int i = 0; i < cross; ++i) {
+            child1.chromosome[i] = parent1.chromosome[i];
+            child2.chromosome[i] = parent2.chromosome[i];
+        }
+        for (int i = cross; i < numGenes; ++i) {
+            child1.chromosome[i] = parent2.chromosome[i];
+            child2.chromosome[i] = parent1.chromosome[i];
+        }
+        mutate(child1);
+        mutate(child2);
+
+        Individual[] result = new Individual[2];
+        result[0] = child1;
+        result[1] = child2;
+
+        return result;
+    }
+
+    private Individual[] crossoverDouble(Individual parent1, Individual parent2) {
+        int numGenes = parent1.chromosome.length;
+        int cross1 = Parameters.random.nextInt(numGenes);
+        int cross2 = cross1;
+        while (cross2 == cross1) {
+            cross2 = Parameters.random.nextInt(numGenes);
+        }
+        System.out.println(cross1 + " " + cross2);
+
+        int min = Math.min(cross1, cross2);
+        int max = Math.max(cross1, cross2);
+
+        System.out.println(min + " " + max);
+
+        Individual child1 = new Individual();
+        Individual child2 = new Individual();
+
+        for (int i = 0; i < min; ++i) {
+            child1.chromosome[i] = parent1.chromosome[i];
+            child2.chromosome[i] = parent2.chromosome[i];
+        }
+        for (int i = min; i < max; ++i) {
+            child1.chromosome[i] = parent2.chromosome[i];
+            child2.chromosome[i] = parent1.chromosome[i];
+        }
+        for (int i = max; i < numGenes; ++i) {
+            child1.chromosome[i] = parent1.chromosome[i];
+            child2.chromosome[i] = parent2.chromosome[i];
+        }
+        mutate(child1);
+        mutate(child2);
+
+        Individual[] result = new Individual[2];
+        result[0] = child1;
+        result[1] = child2;
+
+        return result;
+    }
+
+    private Individual[] crossoverUniform(Individual parent1, Individual parent2, int n) {
+        int numGenes = parent1.chromosome.length;
+
+        Individual child1 = new Individual();
+        Individual child2 = new Individual();
+
+        int cross = Parameters.random.nextInt(2);
+
+        for (int i = 0; i < numGenes; ++i) {
+            if (cross < 1) {
+                child1.chromosome[i] = parent1.chromosome[i];
+                child2.chromosome[i] = parent2.chromosome[i];
+            } else {
+                child1.chromosome[i] = parent2.chromosome[i];
+                child2.chromosome[i] = parent1.chromosome[i];
+            }
+            cross = Parameters.random.nextInt(2);
+        }
+
+        mutate(child1);
+        mutate(child2);
+
+        Individual[] result = new Individual[2];
+        result[0] = child1;
+        result[1] = child2;
+
+        return result;
+    }
+
+    private Individual[] reproduce(Individual parent1, Individual parent2) {
+        int numGenes = parent1.chromosome.length;
 
         Individual child1 = new Individual();
         Individual child2 = new Individual();
@@ -223,37 +291,38 @@ public class EvolutionaryTrainer extends NeuralNetwork {
         return result;
     } // Reproduce
 
-
-    /**
-     * Mutation
-     * <p>
-     * Not Implemented
-     */
     private void mutate(Individual child) {
+        double chance = Parameters.random.nextDouble();
+        int operation = Parameters.random.nextInt(2);
 
+        for (int i = 0; i < child.chromosome.length; ++i) {
+            if (chance <= Parameters.mutateRate) {
+                child.chromosome[i] = (operation < 1) ?
+                        child.chromosome[i] * -Parameters.mutateChange :
+                        child.chromosome[i] * Parameters.mutateChange;
+            }
+
+            if (child.chromosome[i] < Parameters.minGene) {
+                child.chromosome[i] = Parameters.minGene;
+            } else if (child.chromosome[i] > Parameters.maxGene) {
+                child.chromosome[i] = Parameters.maxGene;
+            }
+        }
     }
 
-    /**
-     * Replaces the worst two members of the population with the 2 children
-     */
     private void replace(Individual child1, Individual child2, Individual[] population) {
         // place child1 and child2 replacing two worst individuals
         int popSize = population.length;
+
         Arrays.sort(population);
         population[popSize - 1] = child1;
         population[popSize - 2] = child2;
     }
 
-    /**
-     * Replaces the third worst member of the population with a new randomly initialised individual
-     *
-     * @param population
-     */
     private void injectImmigrant(Individual[] population) {
-
-        Arrays.sort(population);
         Individual immigrant = new Individual();
         evaluateIndividuals(new Individual[]{immigrant});
+        Arrays.sort(population);
 
         // replace third worst individual
         population[population.length - 3] = immigrant;
