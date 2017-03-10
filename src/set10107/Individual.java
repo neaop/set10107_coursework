@@ -16,8 +16,7 @@ public class Individual implements Comparable<Individual> {
     }
 
     @Override
-    public int compareTo(Individual other) // smallest error to largest
-    {
+    public int compareTo(Individual other) {
         if (this.error < other.error)
             return -1;
         else if (this.error > other.error)
@@ -27,7 +26,6 @@ public class Individual implements Comparable<Individual> {
     }
 
     public Individual copy() {
-        // Individual copy = new Individual(numGenes, minGene, maxGene);
         Individual copy = new Individual();
         copy.chromosome = Arrays.copyOf(chromosome, chromosome.length);
         copy.error = error;
@@ -36,7 +34,6 @@ public class Individual implements Comparable<Individual> {
 
     @Override
     public String toString() {
-
         String str = "" + error + "\t";
         for (int i = 0; i < chromosome.length - 2; i++) {
             str += chromosome[i] + ", ";

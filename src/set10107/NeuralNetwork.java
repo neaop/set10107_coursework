@@ -14,8 +14,6 @@ public class NeuralNetwork {
     protected double[][] hoWeights;
     protected double[] oBiases;
     protected double[] outputs;
-//	protected int numWeights;
-
 
     public NeuralNetwork() {
         this.numInput = Parameters.numInput;
@@ -37,8 +35,9 @@ public class NeuralNetwork {
     private static double[][] makeMatrix(int rows, int cols) {
         // helper for NN ctor
         double[][] result = new double[rows][];
-        for (int r = 0; r < result.length; ++r)
+        for (int r = 0; r < result.length; ++r) {
             result[r] = new double[cols];
+        }
         return result;
     }
 
@@ -51,16 +50,22 @@ public class NeuralNetwork {
         }
         int k = 0; // points into weights param
 
-        for (int i = 0; i < numInput; ++i)
-            for (int j = 0; j < numHidden; ++j)
+        for (int i = 0; i < numInput; ++i) {
+            for (int j = 0; j < numHidden; ++j) {
                 ihWeights[i][j] = weights[k++];
-        for (int i = 0; i < numHidden; ++i)
+            }
+        }
+        for (int i = 0; i < numHidden; ++i) {
             hBiases[i] = weights[k++];
-        for (int i = 0; i < numHidden; ++i)
-            for (int j = 0; j < numOutput; ++j)
+        }
+        for (int i = 0; i < numHidden; ++i) {
+            for (int j = 0; j < numOutput; ++j) {
                 hoWeights[i][j] = weights[k++];
-        for (int i = 0; i < numOutput; ++i)
+            }
+        }
+        for (int i = 0; i < numOutput; ++i) {
             oBiases[i] = weights[k++];
+        }
     }
 
     public double[] getWeights() {
@@ -68,16 +73,21 @@ public class NeuralNetwork {
         int numWeights = (numInput * numHidden) + (numHidden * numOutput) + numHidden + numOutput;
         double[] result = new double[numWeights];
         int k = 0;
-        for (int i = 0; i < ihWeights.length; ++i)
-            for (int j = 0; j < ihWeights[0].length; ++j)
+        for (int i = 0; i < ihWeights.length; ++i) {
+            for (int j = 0; j < ihWeights[0].length; ++j) {
                 result[k++] = ihWeights[i][j];
-        for (int i = 0; i < hBiases.length; ++i)
+            }
+        }
+        for (int i = 0; i < hBiases.length; ++i) {
             result[k++] = hBiases[i];
-        for (int i = 0; i < hoWeights.length; ++i)
+        }
+        for (int i = 0; i < hoWeights.length; ++i) {
             for (int j = 0; j < hoWeights[0].length; ++j)
                 result[k++] = hoWeights[i][j];
-        for (int i = 0; i < oBiases.length; ++i)
+        }
+        for (int i = 0; i < oBiases.length; ++i) {
             result[k++] = oBiases[i];
+        }
         return result;
     }
 
@@ -89,8 +99,9 @@ public class NeuralNetwork {
         double[] hSums = new double[numHidden];
         double[] oSums = new double[numOutput];
 
-        for (int i = 0; i < xValues.length; ++i)
+        for (int i = 0; i < xValues.length; ++i) {
             this.inputs[i] = xValues[i];
+        }
 
         for (int j = 0; j < numHidden; ++j)
             for (int i = 0; i < numInput; ++i)
@@ -131,7 +142,6 @@ public class NeuralNetwork {
             return Math.tanh(x);
     }
 
-
     public double meanSquaredError(double[][] trainData, double[] weights) {
         // how far off are computed values from desired values
         this.setWeights(weights);
@@ -143,8 +153,9 @@ public class NeuralNetwork {
             // assumes data has x-values followed by y-values
             xValues = Arrays.copyOf(trainData[i], numInput);
 
-            for (int j = 0; j < numOutput; j++)
+            for (int j = 0; j < numOutput; j++) {
                 tValues[j] = trainData[i][numInput + j];
+            }
 
             double[] yValues = this.computeOutputs(xValues);
             for (int j = 0; j < yValues.length; ++j)
@@ -162,16 +173,16 @@ public class NeuralNetwork {
         for (int i = 0; i < testData.length; ++i) {
             xValues = Arrays.copyOf(testData[i], numInput);
 
-            for (int j = 0; j < numOutput; j++)
+            for (int j = 0; j < numOutput; j++) {
                 tValues[j] = testData[i][numInput + j];
+            }
 
             yValues = this.computeOutputs(xValues);
 
             for (int j = 0; j < yValues.length; ++j)
                 totalError += ((yValues[j] - tValues[j]) * (yValues[j] - tValues[j]));
-
         }
         return (totalError / testData.length);
     }
 
-} // NeuralNetwork
+}

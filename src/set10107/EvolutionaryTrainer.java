@@ -16,35 +16,35 @@ public class EvolutionaryTrainer extends NeuralNetwork {
         Parameters.setDataSet(dataSet);
 
         System.out.println("\nThe training data is:");
-//        showMatrix(Parameters.trainData, Parameters.trainData.length, 1, true);
+        // showMatrix(Parameters.trainData, Parameters.trainData.length, 1, true);
 
         System.out.println("The test data is:");
-//        showMatrix(Parameters.testData, Parameters.testData.length, 1, true);
+        // showMatrix(Parameters.testData, Parameters.testData.length, 1, true);
 
-        /**
-         * train the NN using our EA
+        /*
+          train the NN using our EA
          */
         EvolutionaryTrainer nn = new EvolutionaryTrainer();
         System.out.println("\nBeginning training");
         double[] bestWeights = nn.train();
 
-        /**
-         * Show best weights found
+        /*
+          Show best weights found
          */
         System.out.println("Training complete");
         System.out.println("\nFinal weights and bias values:");
-//        showVector(bestWeights, 10, 3, true);
+        // showVector(bestWeights, 10, 3, true);
 
-        /**
-         * Show accuracy on training data
+        /*
+          Show accuracy on training data
          */
         nn.setWeights(bestWeights);
         double trainAcc = nn.testNetwork(Parameters.trainData);
         System.out.print("\nAccuracy on training data = ");
         System.out.println(trainAcc);
 
-        /**
-         * Show accuracy on unseen test data
+        /*
+          Show accuracy on unseen test data
          */
         double testAcc = nn.testNetwork(Parameters.testData);
         System.out.print("\nAccuracy on test data = ");
@@ -54,26 +54,26 @@ public class EvolutionaryTrainer extends NeuralNetwork {
     }
 
     private double[] train() {
-        /**
-         *  initialize the population
+        /*
+           initialize the population
          */
         Individual[] population = initialise();
 
-        /**
-         * used to store a copy of the best Individual in the population
+        /*
+          used to store a copy of the best Individual in the population
          */
         Individual bestIndividual = getBest(population);
 
-        /**
-         * main EA processing loop
+        /*
+          main EA processing loop
          */
         int gen = 0;
         boolean done = false;
         while (gen < Parameters.maxGeneration && done == false) {
 
-            /**
-             *  this is a skeleton EA - you need to add the methods
-             *  you can also change the EA if you want
+            /*
+               this is a skeleton EA - you need to add the methods
+               you can also change the EA if you want
              */
 
             //Select 2 good Individuals
@@ -95,7 +95,7 @@ public class EvolutionaryTrainer extends NeuralNetwork {
             //check that the best hasn't improved
             bestIndividual = getBest(population);
 
-//            System.out.println(gen + "\t" + bestIndividual);
+            // System.out.println(gen + "\t" + bestIndividual);
 
             //check our termination criteria
             if (bestIndividual.error < Parameters.exitError) {
@@ -105,7 +105,6 @@ public class EvolutionaryTrainer extends NeuralNetwork {
         }
         return bestIndividual.chromosome;
     } // Train
-
 
     private void evaluateIndividuals(Individual[] individuals) {
         for (Individual individual : individuals) {
@@ -129,16 +128,14 @@ public class EvolutionaryTrainer extends NeuralNetwork {
         Individual[] population = new Individual[Parameters.popSize];
         for (int i = 0; i < population.length; ++i) {
             population[i] = new Individual();
-            double error = meanSquaredError(Parameters.trainData, population[i].chromosome);
-            population[i].error = error;
+            population[i].error = meanSquaredError(Parameters.trainData, population[i].chromosome);
         }
         return population;
     }
 
     private Individual selectBogo(Individual[] population) {
         int popSize = population.length;
-        Individual parent = population[Parameters.random.nextInt(popSize)].copy();
-        return parent;
+        return population[Parameters.random.nextInt(popSize)].copy();
     }
 
     private Individual selectElite(Individual[] population, int index) {
@@ -206,12 +203,9 @@ public class EvolutionaryTrainer extends NeuralNetwork {
         while (cross2 == cross1) {
             cross2 = Parameters.random.nextInt(numGenes);
         }
-        System.out.println(cross1 + " " + cross2);
 
         int min = Math.min(cross1, cross2);
         int max = Math.max(cross1, cross2);
-
-        System.out.println(min + " " + max);
 
         Individual child1 = new Individual();
         Individual child2 = new Individual();

@@ -6,10 +6,7 @@ import java.io.IOException;
 
 public class DataLogger {
 
-    private static String dataDirName = "data/";
     private static FileWriter fw;
-
-    /* writes data to output file */
 
     static synchronized void writeData(String string) throws IOException {
         fw.write(string);
@@ -18,6 +15,7 @@ public class DataLogger {
 
     static void createDataLocation() throws IOException {
         boolean result = false;
+        String dataDirName = "data/";
         File dataDir = new File(dataDirName);
         if (!dataDir.exists()) {
             result = dataDir.mkdirs();
@@ -30,6 +28,11 @@ public class DataLogger {
         String FILE_PATH = String.format("%s/%d_data.csv",
                 dataDir.getPath(), System.nanoTime());
         fw = new FileWriter(FILE_PATH, true);
+    }
+
+    static void closeFile() throws IOException {
+        fw.flush();
+        fw.close();
     }
 
 }
