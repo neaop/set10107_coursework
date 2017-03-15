@@ -2,12 +2,12 @@ package set10107;
 
 import java.util.Arrays;
 
-public class Individual implements Comparable<Individual> {
+class Individual implements Comparable<Individual> {
 
-    public double[] chromosome; // represents a solution
-    public double error; // smaller values are better for minimization
+    double[] chromosome; // represents a solution
+    double error; // smaller values are better for minimization
 
-    public Individual() {
+    Individual() {
         this.chromosome = new double[Parameters.numGenes];
         for (int i = 0; i < this.chromosome.length; i++) {
             this.chromosome[i] = (Parameters.maxGene - Parameters.minGene) * Parameters.random.nextDouble()
@@ -25,7 +25,7 @@ public class Individual implements Comparable<Individual> {
             return 0;
     }
 
-    public Individual copy() {
+    Individual copy() {
         Individual copy = new Individual();
         copy.chromosome = Arrays.copyOf(chromosome, chromosome.length);
         copy.error = error;

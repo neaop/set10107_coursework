@@ -1,5 +1,6 @@
 package set10107;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,50 +11,49 @@ public class EvolutionaryTrainer extends NeuralNetwork {
         super();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         String dataSet = "A";
         Parameters.setDataSet(dataSet);
+        DataLogger.createDataLocation(dataSet);
+        DataLogger.writeDetials();
+        DataLogger.writeData("iteration,generation,seed,best\r\n");
+        int iteration;
 
-        System.out.println("\nThe training data is:");
-        // showMatrix(Parameters.trainData, Parameters.trainData.length, 1, true);
+        for (iteration = 0; iteration < 50; ++iteration) {
+            Parameters.seed++;
+            EvolutionaryTrainer nn = new EvolutionaryTrainer();
 
-        System.out.println("The test data is:");
-        // showMatrix(Parameters.testData, Parameters.testData.length, 1, true);
-
-        /*
-          train the NN using our EA
-         */
-        EvolutionaryTrainer nn = new EvolutionaryTrainer();
-        System.out.println("\nBeginning training");
-        double[] bestWeights = nn.train();
-
+            // System.out.println("\nBeginning training");
+            double[] bestWeights = nn.train(iteration);
         /*
           Show best weights found
          */
-        System.out.println("Training complete");
-        System.out.println("\nFinal weights and bias values:");
-        // showVector(bestWeights, 10, 3, true);
+            System.out.println("Training complete");
+            // System.out.println("\nFinal weights and bias values:");
+            // showVector(bestWeights, 10, 3, true);
 
         /*
           Show accuracy on training data
          */
-        nn.setWeights(bestWeights);
-        double trainAcc = nn.testNetwork(Parameters.trainData);
-        System.out.print("\nAccuracy on training data = ");
-        System.out.println(trainAcc);
+            nn.setWeights(bestWeights);
+            double trainAcc = nn.testNetwork(Parameters.trainData);
+            System.out.print("\nAccuracy on training data = ");
+            System.out.println(trainAcc);
 
         /*
           Show accuracy on unseen test data
          */
-        double testAcc = nn.testNetwork(Parameters.testData);
-        System.out.print("\nAccuracy on test data = ");
-        System.out.println(testAcc);
-        System.out.println("\nEnd NN training demo");
-
+            double testAcc = nn.testNetwork(Parameters.testData);
+            System.out.print("\nAccuracy on test data = ");
+            System.out.println(testAcc);
+            // System.out.println("\nEnd NN training demo");
+            DataLogger.writeData(iteration + ",final," + Parameters.seed + "," + testAcc + "\r\n");
+        }
+        DataLogger.closeFile();
     }
 
-    private double[] train() {
+    private double[] train(int iteration) throws IOException {
         /*
            initialize the population
          */
@@ -69,19 +69,19 @@ public class EvolutionaryTrainer extends NeuralNetwork {
          */
         int gen = 0;
         boolean done = false;
-        while (gen < Parameters.maxGeneration && done == false) {
-
+        while (gen < Parameters.maxGeneration && !done) {
+            DataLogger.writeData(iteration + "," + gen + "," + Parameters.seed + "," + bestIndividual.error + "\r\n");
             /*
                this is a skeleton EA - you need to add the methods
                you can also change the EA if you want
              */
 
             //Select 2 good Individuals
-            Individual parent1 = selectBogo(population); // 2 good Individuals
-            Individual parent2 = selectBogo(population);
+            Individual parent1 = selectRandom(population); // 2 good Individuals
+            Individual parent2 = selectRandom(population);
 
             //Generate 2 new children by crossover (includes call to mutation)
-            Individual[] children = reproduce(parent1, parent2);
+            Individual[] children = crossoverClone(parent1, parent2);
 
             //Evaluate the new individuals
             evaluateIndividuals(children);
@@ -96,6 +96,7 @@ public class EvolutionaryTrainer extends NeuralNetwork {
             bestIndividual = getBest(population);
 
             // System.out.println(gen + "\t" + bestIndividual);
+
 
             //check our termination criteria
             if (bestIndividual.error < Parameters.exitError) {
@@ -133,7 +134,7 @@ public class EvolutionaryTrainer extends NeuralNetwork {
         return population;
     }
 
-    private Individual selectBogo(Individual[] population) {
+    private Individual selectRandom(Individual[] population) {
         int popSize = population.length;
         return population[Parameters.random.nextInt(popSize)].copy();
     }
@@ -261,7 +262,7 @@ public class EvolutionaryTrainer extends NeuralNetwork {
         return result;
     }
 
-    private Individual[] reproduce(Individual parent1, Individual parent2) {
+    private Individual[] crossoverClone(Individual parent1, Individual parent2) {
         int numGenes = parent1.chromosome.length;
 
         Individual child1 = new Individual();
@@ -284,6 +285,7 @@ public class EvolutionaryTrainer extends NeuralNetwork {
 
         return result;
     } // Reproduce
+
 
     private void mutate(Individual child) {
         double chance = Parameters.random.nextDouble();

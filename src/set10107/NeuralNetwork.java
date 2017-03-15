@@ -2,20 +2,20 @@ package set10107;
 
 import java.util.Arrays;
 
-public class NeuralNetwork {
+class NeuralNetwork {
 
-    protected int numInput;
-    protected int numHidden;
-    protected int numOutput;
-    protected double[] inputs;
-    protected double[][]     ihWeights;
-    protected double[] hBiases;
-    protected double[] hOutputs;
-    protected double[][] hoWeights;
-    protected double[] oBiases;
-    protected double[] outputs;
+    private int numInput;
+    private int numHidden;
+    private int numOutput;
+    private double[] inputs;
+    private double[][] ihWeights;
+    private double[] hBiases;
+    private double[] hOutputs;
+    private double[][] hoWeights;
+    private double[] oBiases;
+    private double[] outputs;
 
-    public NeuralNetwork() {
+    NeuralNetwork() {
         this.numInput = Parameters.numInput;
         this.numHidden = Parameters.numHidden;
         this.numOutput = Parameters.numOutput;
@@ -41,7 +41,7 @@ public class NeuralNetwork {
         return result;
     }
 
-    public void setWeights(double[] weights) {
+    void setWeights(double[] weights) {
         // sets weights and biases from weights[]
         int numWeights = (numInput * numHidden) + (numHidden * numOutput) + numHidden + numOutput;
         if (weights.length != numWeights) {
@@ -91,7 +91,7 @@ public class NeuralNetwork {
         return result;
     }
 
-    public double[] computeOutputs(double[] xValues) {
+    private double[] computeOutputs(double[] xValues) {
         // feed-forward mechanism for NN classifier
         if (xValues.length != numInput)
             System.out.println("Bad xValues array length");
@@ -142,7 +142,7 @@ public class NeuralNetwork {
             return Math.tanh(x);
     }
 
-    public double meanSquaredError(double[][] trainData, double[] weights) {
+    double meanSquaredError(double[][] trainData, double[] weights) {
         // how far off are computed values from desired values
         this.setWeights(weights);
 
@@ -164,7 +164,7 @@ public class NeuralNetwork {
         return sumSquaredError / trainData.length;
     }
 
-    public double testNetwork(double[][] testData) {
+    double testNetwork(double[][] testData) {
         double totalError = 0;
         double[] xValues = new double[numInput]; // inputs
         double[] tValues = new double[numOutput]; // targets
