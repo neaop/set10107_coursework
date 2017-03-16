@@ -7,17 +7,22 @@ import java.util.Collections;
 
 public class EvolutionaryTrainer extends NeuralNetwork {
 
+    static CLParser.CrossoverType cross;
+    static CLParser.MutationType mutation;
+    static CLParser.SelectionType selection;
+
     private EvolutionaryTrainer() {
         super();
     }
 
     public static void main(String[] args) throws IOException {
+        CLParser.initParser();
+        CLParser.parseArgs(args);
+        System.out.println(Parameters.maxGene);
 
-        String dataSet = "A";
-        Parameters.setDataSet(dataSet);
-        DataLogger.createDataLocation(dataSet);
         DataLogger.writeDetials();
         DataLogger.writeData("iteration,generation,seed,best\r\n");
+
         int iteration;
 
         for (iteration = 0; iteration < 50; ++iteration) {
@@ -68,20 +73,52 @@ public class EvolutionaryTrainer extends NeuralNetwork {
           main EA processing loop
          */
         int gen = 0;
+        Individual parent1 = null;
+        Individual parent2 = null;
         boolean done = false;
         while (gen < Parameters.maxGeneration && !done) {
             DataLogger.writeData(iteration + "," + gen + "," + Parameters.seed + "," + bestIndividual.error + "\r\n");
+
             /*
                this is a skeleton EA - you need to add the methods
                you can also change the EA if you want
              */
 
             //Select 2 good Individuals
-            Individual parent1 = selectRandom(population); // 2 good Individuals
-            Individual parent2 = selectRandom(population);
+            switch (selection) {
+                case RANDOM:
+                    parent1 = selectRandom(population);
+                    parent2 = selectRandom(population);
+                case ELITE:
+                    parent1 = selectElite(population, 0);
+                    parent2 = selectElite(population, 1);
+                case ROULETTE:
+                    parent1 = selectRoulette(population);
+                    parent2 = selectRoulette(population);
+                case TOURNAMENT:
+                    parent1 = selectTournament(population, Parameters.tournamentSize);
+                    parent2 = selectTournament(population, Parameters.tournamentSize);
+            }
 
+            Individual[] children = null;
+            switch (cross) {
+                case CLONE:
+                    children = crossoverClone(parent1, parent2);
+                case UNIFORM:
+                    children = crossoverUniform(parent1, parent2);
+                case SINGLE:
+                    children = crossoverSingle(parent1, parent2);
+                case DOUBLE:
+                    children = crossoverDouble(parent1, parent2);
+            }
+
+            switch (mutation) {
+                case NONE:
+                case FLIP:
+                case BOUNDARY: mutate(children);
+            }
             //Generate 2 new children by crossover (includes call to mutation)
-            Individual[] children = crossoverClone(parent1, parent2);
+
 
             //Evaluate the new individuals
             evaluateIndividuals(children);
@@ -187,8 +224,6 @@ public class EvolutionaryTrainer extends NeuralNetwork {
             child1.chromosome[i] = parent2.chromosome[i];
             child2.chromosome[i] = parent1.chromosome[i];
         }
-        mutate(child1);
-        mutate(child2);
 
         Individual[] result = new Individual[2];
         result[0] = child1;
@@ -223,8 +258,6 @@ public class EvolutionaryTrainer extends NeuralNetwork {
             child1.chromosome[i] = parent1.chromosome[i];
             child2.chromosome[i] = parent2.chromosome[i];
         }
-        mutate(child1);
-        mutate(child2);
 
         Individual[] result = new Individual[2];
         result[0] = child1;
@@ -233,7 +266,7 @@ public class EvolutionaryTrainer extends NeuralNetwork {
         return result;
     }
 
-    private Individual[] crossoverUniform(Individual parent1, Individual parent2, int n) {
+    private Individual[] crossoverUniform(Individual parent1, Individual parent2) {
         int numGenes = parent1.chromosome.length;
 
         Individual child1 = new Individual();
@@ -251,9 +284,6 @@ public class EvolutionaryTrainer extends NeuralNetwork {
             }
             cross = Parameters.random.nextInt(2);
         }
-
-        mutate(child1);
-        mutate(child2);
 
         Individual[] result = new Individual[2];
         result[0] = child1;
@@ -276,9 +306,6 @@ public class EvolutionaryTrainer extends NeuralNetwork {
             child1.chromosome[i] = parent2.chromosome[i];
         }
 
-        mutate(child1);
-        mutate(child2);
-
         Individual[] result = new Individual[2];
         result[0] = child1;
         result[1] = child2;
@@ -286,22 +313,23 @@ public class EvolutionaryTrainer extends NeuralNetwork {
         return result;
     } // Reproduce
 
-
-    private void mutate(Individual child) {
+    private void mutate(Individual[] children) {
         double chance = Parameters.random.nextDouble();
         int operation = Parameters.random.nextInt(2);
+        for (Individual child : children) {
 
-        for (int i = 0; i < child.chromosome.length; ++i) {
-            if (chance <= Parameters.mutateRate) {
-                child.chromosome[i] = (operation < 1) ?
-                        child.chromosome[i] * -Parameters.mutateChange :
-                        child.chromosome[i] * Parameters.mutateChange;
-            }
+            for (int i = 0; i < child.chromosome.length; ++i) {
+                if (chance <= Parameters.mutateRate) {
+                    child.chromosome[i] = (operation < 1) ?
+                            child.chromosome[i] * -Parameters.mutateChange :
+                            child.chromosome[i] * Parameters.mutateChange;
+                }
 
-            if (child.chromosome[i] < Parameters.minGene) {
-                child.chromosome[i] = Parameters.minGene;
-            } else if (child.chromosome[i] > Parameters.maxGene) {
-                child.chromosome[i] = Parameters.maxGene;
+                if (child.chromosome[i] < Parameters.minGene) {
+                    child.chromosome[i] = Parameters.minGene;
+                } else if (child.chromosome[i] > Parameters.maxGene) {
+                    child.chromosome[i] = Parameters.maxGene;
+                }
             }
         }
     }
