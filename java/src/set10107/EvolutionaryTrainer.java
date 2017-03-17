@@ -1,6 +1,5 @@
 package set10107;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,17 +14,16 @@ public class EvolutionaryTrainer extends NeuralNetwork {
         super();
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         CLParser.initParser();
         CLParser.parseArgs(args);
-        System.out.println(Parameters.maxGene);
 
-        DataLogger.writeDetials();
         DataLogger.writeData("iteration,generation,seed,best\r\n");
 
         int iteration;
 
         for (iteration = 0; iteration < 50; ++iteration) {
+            System.out.println("\nIteration: " + iteration);
             Parameters.seed++;
             EvolutionaryTrainer nn = new EvolutionaryTrainer();
 
@@ -43,22 +41,20 @@ public class EvolutionaryTrainer extends NeuralNetwork {
          */
             nn.setWeights(bestWeights);
             double trainAcc = nn.testNetwork(Parameters.trainData);
-            System.out.print("\nAccuracy on training data = ");
-            System.out.println(trainAcc);
+            System.out.println("Accuracy on training data = " + trainAcc);
 
         /*
           Show accuracy on unseen test data
          */
             double testAcc = nn.testNetwork(Parameters.testData);
-            System.out.print("\nAccuracy on test data = ");
-            System.out.println(testAcc);
+            System.out.println("Accuracy on test data = " + testAcc);
             // System.out.println("\nEnd NN training demo");
             DataLogger.writeData(iteration + ",final," + Parameters.seed + "," + testAcc + "\r\n");
         }
         DataLogger.closeFile();
     }
 
-    private double[] train(int iteration) throws IOException {
+    private double[] train(int iteration) {
         /*
            initialize the population
          */

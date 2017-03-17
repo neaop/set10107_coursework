@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="set10107_coursework:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/set10107_coursework_jar</output-path>
+    <root id="archive" name="set10107_coursework.jar">
+      <element id="module-output" name="set10107_coursework" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/argparse4j-0.7.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/Reader.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

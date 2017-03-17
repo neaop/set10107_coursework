@@ -30,7 +30,7 @@ class CLParser {
         parser = ArgumentParsers.newArgumentParser("set10107_coursework");
         parser.description("A genetic algorithm to train a neural network.");
         parser.addArgument("data-set")
-                .type(Integer.class)
+                .type(String.class)
                 .choices("A", "B", "C");
         parser.addArgument("--selection", "-s")
                 .type(SelectionType.class)
@@ -55,10 +55,10 @@ class CLParser {
                 .setDefault(50);
         parser.addArgument("--max-gene", "--max")
                 .type(Double.class)
-                .setDefault(5);
+                .setDefault(5.0);
         parser.addArgument("--min-gene", "--min")
                 .type(Double.class)
-                .setDefault(-5);
+                .setDefault(-5.0);
         parser.addArgument("--seed")
                 .type(Integer.class)
                 .setDefault(999);
@@ -67,28 +67,35 @@ class CLParser {
                 .setDefault(2);
     }
 
-    static void parseArgs(String[] args) throws IOException {
+    static void parseArgs(String[] args){
         try {
             res = parser.parseArgs(args);
-            setArgs();
         } catch (ArgumentParserException e) {
-            e.printStackTrace();
+            System.out.println("Error parsing args.");
+            System.exit(1);
+        }
+        try {
+            setArgs();
+        } catch (IOException e) {
+            System.out.println("Error setting args.");
+            System.exit(1);
         }
     }
 
     private static void setArgs() throws IOException {
-        Parameters.setDataSet(res.get("data-set"));
-        Parameters.maxGene = res.get("max");
-        Parameters.minGene = res.get("min");
-        Parameters.seed = res.get("seed");
-        Parameters.numHidden = res.get("hl");
-        Parameters.mutateRate = res.get("mr");
-        Parameters.mutateChange = res.get("mc");
-        Parameters.popSize = res.get("p");
-        EvolutionaryTrainer.selection = res.get("s");
-        EvolutionaryTrainer.mutation = res.get("m");
-        EvolutionaryTrainer.cross = res.get("c");
-        DataLogger.createDataLocation(res.get("data-set"));
+        Parameters.setDataSet(res.get("data_set").toString());
+        Parameters.maxGene = (double)res.get("max_gene");
+        Parameters.minGene = (double)res.get("min_gene");
+        Parameters.seed = (int)res.get("seed");
+        Parameters.numHidden = (int)res.get("hidden_layer");
+        Parameters.mutateRate = res.get("mutation_rate");
+        Parameters.mutateChange = res.get("mutation_change");
+        Parameters.popSize = res.get("population");
+        EvolutionaryTrainer.selection = res.get("selection");
+        EvolutionaryTrainer.mutation = res.get("mutation");
+        EvolutionaryTrainer.cross = res.get("crossover");
+        DataLogger.createDataLocation(res.get("data_set"));
+        DataLogger.writeData(res.toString()+"\n");
     }
 
 }

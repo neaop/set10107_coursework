@@ -8,20 +8,27 @@ public class DataLogger {
 
     private static FileWriter fw;
 
-    static synchronized void writeData(String string) throws IOException {
-        fw.write(string);
-        fw.flush();
+    static synchronized void writeData(String string) {
+        try {
+            fw.write(string);
+        } catch (IOException e) {
+            System.out.println("Error writing data.");
+        }
+        try {
+            fw.flush();
+        } catch (IOException e) {
+            System.out.println("Error flushing file");
+        }
     }
 
-    static synchronized void writeDetials() throws IOException {
-        writeData(String.format("hidden, geneMin, geneMax, population, mutRate, mutChange \r\n" +
-                        "%1d, %2f, %3f, %4d, %5f, %6f \r\n",
-                Parameters.numHidden, Parameters.minGene, Parameters.maxGene, Parameters.popSize,
-                Parameters.mutateRate, Parameters.mutateChange));
-
+    static synchronized void writeDetails()  {
+            writeData(String.format("hidden, geneMin, geneMax, population, mutRate, mutChange \r\n" +
+                            "%1d, %2f, %3f, %4d, %5f, %6f \r\n",
+                    Parameters.numHidden, Parameters.minGene, Parameters.maxGene, Parameters.popSize,
+                    Parameters.mutateRate, Parameters.mutateChange));
     }
 
-    static void createDataLocation(String dataSet) throws IOException {
+    static void createDataLocation(String dataSet) {
         boolean result = false;
         String dataDirName = String.format("data/%s", dataSet);
         File dataDir = new File(dataDirName);
@@ -35,12 +42,27 @@ public class DataLogger {
 
         String FILE_PATH = String.format("%1s/%2d_data.csv",
                 dataDir.getPath(), System.nanoTime());
-        fw = new FileWriter(FILE_PATH, true);
+        try {
+            fw = new FileWriter(FILE_PATH, true);
+        } catch (IOException e) {
+            System.out.println("Error creating  data location.");
+            System.exit(1);
+        }
     }
 
-    static void closeFile() throws IOException {
-        fw.flush();
-        fw.close();
+    static void closeFile() {
+        try {
+            fw.flush();
+        } catch (IOException e) {
+            System.out.println("Error flushing file.");
+            System.exit(1);
+        }
+        try {
+            fw.close();
+        } catch (IOException e) {
+            System.out.println("Error closing file.");
+            System.exit(1);
+        }
     }
 
 }
