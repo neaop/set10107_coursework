@@ -79,11 +79,6 @@ public class EvolutionaryTrainer extends NeuralNetwork {
         while (gen < Parameters.maxGeneration && !done) {
             DataLogger.writeData(iteration + "," + gen + "," + Parameters.seed + "," + bestIndividual.error + "\r\n");
 
-            /*
-               this is a skeleton EA - you need to add the methods
-               you can also change the EA if you want
-             */
-
             //Select 2 good Individuals
             switch (selection) {
                 case RANDOM:
@@ -115,10 +110,9 @@ public class EvolutionaryTrainer extends NeuralNetwork {
             switch (mutation) {
                 case NONE:
                 case FLIP:
-                case BOUNDARY: mutate(children);
+                case BOUNDARY:
+                    mutateBoundaryMultiply(children);
             }
-            //Generate 2 new children by crossover (includes call to mutation)
-
 
             //Evaluate the new individuals
             evaluateIndividuals(children);
@@ -132,10 +126,6 @@ public class EvolutionaryTrainer extends NeuralNetwork {
             //check that the best hasn't improved
             bestIndividual = getBest(population);
 
-            // System.out.println(gen + "\t" + bestIndividual);
-
-
-            //check our termination criteria
             if (bestIndividual.error < Parameters.exitError) {
                 done = true;
             }
@@ -313,23 +303,46 @@ public class EvolutionaryTrainer extends NeuralNetwork {
         return result;
     } // Reproduce
 
-    private void mutate(Individual[] children) {
-        double chance = Parameters.random.nextDouble();
-        int operation = Parameters.random.nextInt(2);
+    private void mutateBoundaryMultiply(Individual[] children) {
+        int operation;
+        double chance;
         for (Individual child : children) {
-
             for (int i = 0; i < child.chromosome.length; ++i) {
+                chance = Parameters.random.nextDouble();
+                operation = Parameters.random.nextInt(2);
                 if (chance <= Parameters.mutateRate) {
                     child.chromosome[i] = (operation < 1) ?
                             child.chromosome[i] * -Parameters.mutateChange :
                             child.chromosome[i] * Parameters.mutateChange;
                 }
+                checkChromosome(child);
+            }
+        }
+    }
 
-                if (child.chromosome[i] < Parameters.minGene) {
-                    child.chromosome[i] = Parameters.minGene;
-                } else if (child.chromosome[i] > Parameters.maxGene) {
-                    child.chromosome[i] = Parameters.maxGene;
+    private void mutateBoundaryAddition(Individual[] children) {
+        int operation;
+        double chance;
+        for (Individual child : children) {
+            for (int i = 0; i < child.chromosome.length; ++i) {
+                chance = Parameters.random.nextDouble();
+                operation = Parameters.random.nextInt(2);
+                if (chance <= Parameters.mutateRate) {
+                    child.chromosome[i] = (operation < 1) ?
+                            child.chromosome[i] - Parameters.mutateChange :
+                            child.chromosome[i] + Parameters.mutateChange;
                 }
+                checkChromosome(child);
+            }
+        }
+    }
+
+    private void checkChromosome(Individual child) {
+        for (Double gene : child.chromosome) {
+            if (gene < Parameters.minGene) {
+                gene = Parameters.minGene;
+            } else if (gene > Parameters.maxGene) {
+                gene = Parameters.maxGene;
             }
         }
     }
