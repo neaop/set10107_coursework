@@ -65,9 +65,12 @@ class CLParser {
         parser.addArgument("--tournament-size", "--ts")
                 .type(Integer.class)
                 .setDefault(2);
+        parser.addArgument("--save-directory", "--sd")
+                .type(String.class)
+                .setDefault("data");
     }
 
-    static void parseArgs(String[] args){
+    static void parseArgs(String[] args) {
         try {
             res = parser.parseArgs(args);
         } catch (ArgumentParserException e) {
@@ -84,18 +87,19 @@ class CLParser {
 
     private static void setArgs() throws IOException {
         Parameters.setDataSet(res.get("data_set").toString());
-        Parameters.maxGene = (double)res.get("max_gene");
-        Parameters.minGene = (double)res.get("min_gene");
-        Parameters.seed = (int)res.get("seed");
-        Parameters.numHidden = (int)res.get("hidden_layer");
+        Parameters.maxGene = (double) res.get("max_gene");
+        Parameters.minGene = (double) res.get("min_gene");
+        Parameters.seed = (int) res.get("seed");
+        Parameters.numHidden = (int) res.get("hidden_layer");
         Parameters.mutateRate = res.get("mutation_rate");
         Parameters.mutateChange = res.get("mutation_change");
         Parameters.popSize = res.get("population");
         EvolutionaryTrainer.selection = res.get("selection");
         EvolutionaryTrainer.mutation = res.get("mutation");
         EvolutionaryTrainer.cross = res.get("crossover");
+        DataLogger.setSaveDirectory(res.get("save_directory"));
         DataLogger.createDataLocation(res.get("data_set"));
-        DataLogger.writeData(res.toString()+"\n");
+        DataLogger.writeData(res.toString() + "\n");
     }
 
 }

@@ -4,8 +4,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class DataLogger {
+class DataLogger {
 
+    private static String saveDirectory = "data";
     private static FileWriter fw;
 
     static synchronized void writeData(String string) {
@@ -21,16 +22,16 @@ public class DataLogger {
         }
     }
 
-    static synchronized void writeDetails()  {
-            writeData(String.format("hidden, geneMin, geneMax, population, mutRate, mutChange \r\n" +
-                            "%1d, %2f, %3f, %4d, %5f, %6f \r\n",
-                    Parameters.numHidden, Parameters.minGene, Parameters.maxGene, Parameters.popSize,
-                    Parameters.mutateRate, Parameters.mutateChange));
+    static synchronized void writeDetails() {
+        writeData(String.format("hidden, geneMin, geneMax, population, mutRate, mutChange \r\n" +
+                        "%1d, %2f, %3f, %4d, %5f, %6f \r\n",
+                Parameters.numHidden, Parameters.minGene, Parameters.maxGene, Parameters.popSize,
+                Parameters.mutateRate, Parameters.mutateChange));
     }
 
     static void createDataLocation(String dataSet) {
         boolean result = false;
-        String dataDirName = String.format("data/%s", dataSet);
+        String dataDirName = String.format("%1$s/%2$s", saveDirectory, dataSet);
         File dataDir = new File(dataDirName);
         if (!dataDir.exists()) {
             result = dataDir.mkdirs();
@@ -65,4 +66,7 @@ public class DataLogger {
         }
     }
 
+    public static void setSaveDirectory(String saveDirectory) {
+        DataLogger.saveDirectory = saveDirectory;
+    }
 }

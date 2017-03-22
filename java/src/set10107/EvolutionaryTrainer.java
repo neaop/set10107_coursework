@@ -17,7 +17,6 @@ public class EvolutionaryTrainer extends NeuralNetwork {
     public static void main(String[] args) {
         CLParser.initParser();
         CLParser.parseArgs(args);
-
         DataLogger.writeData("iteration,generation,seed,best\r\n");
 
         int iteration;
@@ -27,25 +26,13 @@ public class EvolutionaryTrainer extends NeuralNetwork {
             Parameters.seed++;
             EvolutionaryTrainer nn = new EvolutionaryTrainer();
 
-            // System.out.println("\nBeginning training");
             double[] bestWeights = nn.train(iteration);
-        /*
-          Show best weights found
-         */
             System.out.println("Training complete");
-            // System.out.println("\nFinal weights and bias values:");
-            // showVector(bestWeights, 10, 3, true);
 
-        /*
-          Show accuracy on training data
-         */
             nn.setWeights(bestWeights);
             double trainAcc = nn.testNetwork(Parameters.trainData);
             System.out.println("Accuracy on training data = " + trainAcc);
 
-        /*
-          Show accuracy on unseen test data
-         */
             double testAcc = nn.testNetwork(Parameters.testData);
             System.out.println("Accuracy on test data = " + testAcc);
             // System.out.println("\nEnd NN training demo");
@@ -55,19 +42,9 @@ public class EvolutionaryTrainer extends NeuralNetwork {
     }
 
     private double[] train(int iteration) {
-        /*
-           initialize the population
-         */
         Individual[] population = initialise();
-
-        /*
-          used to store a copy of the best Individual in the population
-         */
         Individual bestIndividual = getBest(population);
 
-        /*
-          main EA processing loop
-         */
         int gen = 0;
         Individual parent1 = null;
         Individual parent2 = null;
@@ -75,7 +52,6 @@ public class EvolutionaryTrainer extends NeuralNetwork {
         while (gen < Parameters.maxGeneration && !done) {
             DataLogger.writeData(iteration + "," + gen + "," + Parameters.seed + "," + bestIndividual.error + "\r\n");
 
-            //Select 2 good Individuals
             switch (selection) {
                 case RANDOM:
                     parent1 = selectRandom(population);
@@ -110,16 +86,12 @@ public class EvolutionaryTrainer extends NeuralNetwork {
                     mutateBoundaryMultiply(children);
             }
 
-            //Evaluate the new individuals
             evaluateIndividuals(children);
 
-            //Replace (sorts the population and replaces the two worst individuals)
             replace(children[0], children[1], population);
 
-            //introduce some diversity
             injectImmigrant(population);
 
-            //check that the best hasn't improved
             bestIndividual = getBest(population);
 
             if (bestIndividual.error < Parameters.exitError) {
@@ -128,7 +100,7 @@ public class EvolutionaryTrainer extends NeuralNetwork {
             ++gen;
         }
         return bestIndividual.chromosome;
-    } // Train
+    }
 
     private void evaluateIndividuals(Individual[] individuals) {
         for (Individual individual : individuals) {
@@ -196,11 +168,10 @@ public class EvolutionaryTrainer extends NeuralNetwork {
     }
 
     private Individual[] crossoverSingle(Individual parent1, Individual parent2) {
-        int numGenes = parent1.chromosome.length;
-        int cross = Parameters.random.nextInt(numGenes);
-
         Individual child1 = new Individual();
         Individual child2 = new Individual();
+        int numGenes = parent1.chromosome.length;
+        int cross = Parameters.random.nextInt(numGenes);
 
         for (int i = 0; i < cross; ++i) {
             child1.chromosome[i] = parent1.chromosome[i];
@@ -219,18 +190,19 @@ public class EvolutionaryTrainer extends NeuralNetwork {
     }
 
     private Individual[] crossoverDouble(Individual parent1, Individual parent2) {
+        Individual child1 = new Individual();
+        Individual child2 = new Individual();
         int numGenes = parent1.chromosome.length;
         int cross1 = Parameters.random.nextInt(numGenes);
         int cross2 = cross1;
+        int min, max;
+
         while (cross2 == cross1) {
             cross2 = Parameters.random.nextInt(numGenes);
         }
 
-        int min = Math.min(cross1, cross2);
-        int max = Math.max(cross1, cross2);
-
-        Individual child1 = new Individual();
-        Individual child2 = new Individual();
+        min = Math.min(cross1, cross2);
+        max = Math.max(cross1, cross2);
 
         for (int i = 0; i < min; ++i) {
             child1.chromosome[i] = parent1.chromosome[i];
@@ -253,11 +225,9 @@ public class EvolutionaryTrainer extends NeuralNetwork {
     }
 
     private Individual[] crossoverUniform(Individual parent1, Individual parent2) {
-        int numGenes = parent1.chromosome.length;
-
         Individual child1 = new Individual();
         Individual child2 = new Individual();
-
+        int numGenes = parent1.chromosome.length;
         int cross = Parameters.random.nextInt(2);
 
         for (int i = 0; i < numGenes; ++i) {
@@ -270,7 +240,6 @@ public class EvolutionaryTrainer extends NeuralNetwork {
             }
             cross = Parameters.random.nextInt(2);
         }
-
         Individual[] result = new Individual[2];
         result[0] = child1;
         result[1] = child2;
@@ -280,24 +249,20 @@ public class EvolutionaryTrainer extends NeuralNetwork {
 
     private Individual[] crossoverClone(Individual parent1, Individual parent2) {
         int numGenes = parent1.chromosome.length;
-
         Individual child1 = new Individual();
         Individual child2 = new Individual();
 
         for (int i = 0; i < numGenes; ++i) {
             child1.chromosome[i] = parent1.chromosome[i];
         }
-
         for (int i = 0; i < numGenes; ++i) {
             child1.chromosome[i] = parent2.chromosome[i];
         }
-
         Individual[] result = new Individual[2];
         result[0] = child1;
         result[1] = child2;
-
         return result;
-    } // Reproduce
+    }
 
     private void mutateBoundaryMultiply(Individual[] children) {
         int operation;
@@ -344,9 +309,7 @@ public class EvolutionaryTrainer extends NeuralNetwork {
     }
 
     private void replace(Individual child1, Individual child2, Individual[] population) {
-        // place child1 and child2 replacing two worst individuals
         int popSize = population.length;
-
         Arrays.sort(population);
         population[popSize - 1] = child1;
         population[popSize - 2] = child2;
@@ -356,37 +319,40 @@ public class EvolutionaryTrainer extends NeuralNetwork {
         Individual immigrant = new Individual();
         evaluateIndividuals(new Individual[]{immigrant});
         Arrays.sort(population);
-
-        // replace third worst individual
         population[population.length - 3] = immigrant;
     }
 
     private static void showVector(double[] vector, int valsPerRow, int decimals, boolean newLine) {
         for (int i = 0; i < vector.length; ++i) {
-            if (i % valsPerRow == 0)
+            if (i % valsPerRow == 0) {
                 System.out.println("");
-            if (vector[i] >= 0.0)
+            }
+            if (vector[i] >= 0.0) {
                 System.out.print(" ");
+            }
             System.out.print(vector[i] + " ");
         }
-        if (newLine)
+        if (newLine) {
             System.out.println("");
+        }
     }
 
     private static void showMatrix(double[][] matrix, int numRows, int decimals, boolean newLine) {
         for (int i = 0; i < numRows; ++i) {
             System.out.print(i + ": ");
             for (int j = 0; j < matrix[i].length; ++j) {
-                if (matrix[i][j] >= 0.0)
+                if (matrix[i][j] >= 0.0) {
                     System.out.print(" ");
-                else
+                } else {
                     System.out.print("-");
-                ;
+                }
                 System.out.print(Math.abs(matrix[i][j]) + " ");
             }
             System.out.println("");
         }
-        if (newLine)
+        if (newLine) {
             System.out.println("");
+        }
     }
+
 }
