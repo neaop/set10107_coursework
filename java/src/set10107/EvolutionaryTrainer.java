@@ -90,7 +90,9 @@ public class EvolutionaryTrainer extends NeuralNetwork {
 
             replace(children[0], children[1], population);
 
-            injectImmigrant(population);
+            if(Parameters.immigration) {
+                injectImmigrant(population);
+            }
 
             bestIndividual = getBest(population);
 

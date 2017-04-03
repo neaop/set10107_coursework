@@ -1,12 +1,12 @@
 package set10107;
 
 import net.sourceforge.argparse4j.ArgumentParsers;
+import net.sourceforge.argparse4j.impl.Arguments;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
 
 import java.io.IOException;
-
 
 class CLParser {
 
@@ -68,6 +68,8 @@ class CLParser {
         parser.addArgument("--save-directory", "--sd")
                 .type(String.class)
                 .setDefault("data");
+        parser.addArgument("--immigrant", "-i")
+                .action(Arguments.storeFalse());
     }
 
     static void parseArgs(String[] args) {
@@ -94,11 +96,13 @@ class CLParser {
         Parameters.mutateRate = res.get("mutation_rate");
         Parameters.mutateChange = res.get("mutation_change");
         Parameters.popSize = res.get("population");
+        Parameters.immigration=res.get("immigrant");
         EvolutionaryTrainer.selection = res.get("selection");
         EvolutionaryTrainer.mutation = res.get("mutation");
         EvolutionaryTrainer.cross = res.get("crossover");
         DataLogger.setSaveDirectory(res.get("save_directory"));
         DataLogger.createDataLocation(res.get("data_set"));
+
         DataLogger.writeData(res.toString() + "\n");
     }
 

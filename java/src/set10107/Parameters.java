@@ -16,10 +16,11 @@ class Parameters {
     static double mutateRate = 0.20; // mutation rate for mutation operator
     static double mutateChange = 0.01; // mutation rate for mutation operator
     static long seed = 999;
-    static  int tournamentSize = 2;
+    static int tournamentSize = 2;
     static double[][] trainData;
     static double[][] testData;
     static int numGenes;
+    static boolean immigration = true;
     final static Random random = new Random(seed);
 
     static void setDataSet(String dataSet) {
@@ -35,4 +36,5 @@ class Parameters {
                         "%1d, %2f, %3f, %4d, %5f, %6f, %7d",
                 numHidden, minGene, maxGene, popSize, mutateRate, mutateChange, seed);
     }
+
 }

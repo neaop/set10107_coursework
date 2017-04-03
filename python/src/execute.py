@@ -1,5 +1,6 @@
 import subprocess
 
-for i in range(1, 50):
+for i in range(1, 51):
     subprocess.run(
-        ['java', '-jar', 'set10107_coursework.jar', 'A', '-s', 'RANDOM', '-c', 'SINGLE', '--pop', '{}'.format(i * 10)])
+        ['java', '-jar', 'set10107_coursework.jar', 'A', '--sd', 'hidden-layer', '--hl', '{]'.format(i), '-s', 'RANDOM',
+         '-c', 'SINGLE', '-i', '--pop', '500'])

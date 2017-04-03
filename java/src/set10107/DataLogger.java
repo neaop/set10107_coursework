@@ -66,7 +66,8 @@ class DataLogger {
         }
     }
 
-    public static void setSaveDirectory(String saveDirectory) {
+    static void setSaveDirectory(String saveDirectory) {
         DataLogger.saveDirectory = saveDirectory;
     }
+
 }
