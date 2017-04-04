@@ -8,7 +8,7 @@ dir_files = sorted(os.listdir(os.getcwd()))
 
 for csvFileName in dir_files:
     # if not a .csv file, skip
-    if not csvFileName.endswith('data.csv'):
+    if not csvFileName.endswith('.csv'):
         continue
 
     print('Reading ' + csvFileName)
@@ -25,10 +25,13 @@ for csvFileName in dir_files:
     csvFileObj.close()
 
     total = 0
+    count = 0
     for row in csvRows:
-        total += float(row[3])
+        if row[1] == "final":
+            total += float(row[3])
+            count += 1
 
-    average.append(total / len(csvRows))
+    average.append(total / count)
 
 with open('consolidate.csv', 'w', newline='\n') as csv_file:
     csv_writer = csv.writer(csv_file)
