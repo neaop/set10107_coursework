@@ -1,0 +1,50 @@
+\section{Introduction}
+	\IEEEPARstart{T}{he} aim of this project was to investigate how the diversity of an Evolutionary Algorithm's population effects the performance of Multi-Layer Perception Neural Network trained by said algorithm. 
+	A substantial amount of research has already been conducted into how the effectiveness of Hyper-heuristic's can be improved by encouraging diversity in the individual sub-heuristics - this investigation was designed to asses if a similar approach to Hyper-heuristic diversity could be applied to an Evolutionary algorithm to improve it's fitness
+	
+\section{Approach}
+	Investigation was conducted by exploring how different types of Parent Selection, Child Crossover, Mutation, and Immigrant Injection can alter the overall diversity of an Evolutionary Algorithm's population - and how in turn that effects the overall fitness of the Algorithm.
+	
+	\subsection{Background}
+		Stuff about hyper-heuristics goes here. Get those references, son.
+		\cite{Hong16112004} \cite{hart2017constructing}
+	
+	\subsection{Algorithm Operators}
+		\subsubsection{Selection}
+			While the provided \texttt{selectRandom} function was a perfectly valid solution to increasing the diversity of selected parents - alternative selection functions had to be designed to allow for comparison.
+			
+			\texttt{selectRandom}: The provided selection method operates by simply choosing two random individuals from the population. This selection function should be considered the most diverse, as every individual in the population has an equal chance of being selected to become a parent - regardless of their fitness
+	
+			\texttt{selectElite}: This selection method operates by choosing the two individuals with the best and second-best fitness. From a ignorant approach, this may seem to be a valid section tactic, in reality however this method is likely to cause the population to reach a local maxima within a relatively small number of generations. \texttt{selectElite} was included in this investigation to provide evidence that a lack of diversity in the population may be deferential to its potential fitness.
+			
+			\texttt{selectTournament}: This function was designed to randomly choose a designated number of individuals - and the individual in the group with the best fitness goes forward as a parent. The number of individuals in the tournament directly alters the selection pressure - lager tournaments have a smaller chance of a weaker individual being chosen for crossover. This selection method should prove adequate in diversifying the population - however it is unlikely to be as pronounced as the \texttt{selectRandom} function.
+			
+			\texttt{selectRoulette}: A roulette selection has to potential to pick any individual in the population, proportional to its fitness - e.g. an individual with a fitnesses of 10 is twice as likely to be picked over an individual with a fitness of 5. While individuals with high fitness are more likely to be selected by this function, it is not guaranteed - ensuring this function is suitable for the diversification of the population.
+		
+		\subsection{Crossover}
+		All  crossover methods utilised in this project produced a pair children which were then introduced to the algorithm population by replacing the to two individuals with the worst fitness. Crossover is the most typical way to add diversity to an evolutionary algorithm, however the children's similarity to their parent's is determined by the type of cross over used.
+	
+			\texttt{crossoverClone}: The provided crossover function produces a pair of children, each identical to one of the parents. The use of this kind crossover will result in the eventual homogenization of the algorithm's population - significantly reducing the diversity of the chromosomes. 
+		
+			\texttt{crossoverSingle}: A single-point crossover method uses a random number to determine a crossover point in two newly created children chromosomes. Each child is then given a number of genes from one parent, up to the crossover point, when they then receive genes from the other parent. This crossover method produces 2 inversely mirrored children - in extreme cases can produce two children identical to the parents, reducing the overall diversity of the population by introducing duplicates. 
+			
+			\texttt{crossoverDouble}: Extremely similar to the  \texttt{crossoverSingle} function, with the caveat being that two crossover points are generated. With the addition of a second pivot point on which to swap which parent is passing genes, the chances of producing children similar to the parents is reduced - assuming that the two parents are not already similar in terms of genes.
+			
+			\texttt{crossoverUniform}: Unlike the previous segment based crossovers, a uniform crossover function operates on a gene level. Each gene in a child is copied from one of the two parents depending on the value of a randomly generated number e.g. on the value of 0 the first parent's gene is used, on the value of 1 the second parent's gene is copied. Like the other crossover functions, \texttt{crossoverUniform} produces a set of mirrored children. This cross over method has the potential to produce the most diverse children from a set of parents. 
+			
+		\subsection{Mutation}
+			Mutation of chromosomes is yet another area of a genetic algorithm were diversity can be introduced. No form of mutation was provided, so a simple boundary mutation function was desinged. Witihin the algorthim presenetd, mutation was only applied to child chromosoenes produced by a cross over function.
+			
+			\texttt{mutateBoundary}: This mutation function operates over every gene in a chromasone, producing a random \texttt{double} between 0 and 1 for each one, if the double is less than a predetermined value (\texttt{mutateRate}) then the current gene is altered by adding  or subtracting a second predetermined value to it (\texttt{mutateChange}). The \texttt{}
+			
+			
+\section{Experiments \& Analysis}
+
+
+\section{Results}
+	
+
+\section{Conclusion}
+
+
+\section{Future Work}
