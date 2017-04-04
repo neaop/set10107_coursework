@@ -7,6 +7,7 @@
 	
 	\subsection{Background}
 		Stuff about hyper-heuristics goes here. Get those references, son.
+		\cite{Hong16112004} \cite{hart2017constructing}
 	
 	\subsection{Algorithm Operators}
 		\subsubsection{Selection}
@@ -22,8 +23,20 @@
 		
 		\subsection{Crossover}
 		All  crossover methods utilised in this project produced a pair children which were then introduced to the algorithm population by replacing the to two individuals with the worst fitness. Crossover is the most typical way to add diversity to an evolutionary algorithm, however the children's similarity to their parent's is determined by the type of cross over used.
+	
+			\texttt{crossoverClone}: The provided crossover function produces a pair of children, each identical to one of the parents. The use of this kind crossover will result in the eventual homogenization of the algorithm's population - significantly reducing the diversity of the chromosomes. 
 		
-			\texttt{crossoverSingle}: A single-point crossover method uses a random number to determine a crossover point in two newly created children chromosomes. Each child is then given a number of genes from one parent, up to the crossover point, when they then receive genes from the other parent. This crossover method produces 2 inversely mirrored children - in extreme edge cases can produce two children identicle to the parents, reducing the overall diversity of the popoulation by introducing duplicates. 
+			\texttt{crossoverSingle}: A single-point crossover method uses a random number to determine a crossover point in two newly created children chromosomes. Each child is then given a number of genes from one parent, up to the crossover point, when they then receive genes from the other parent. This crossover method produces 2 inversely mirrored children - in extreme cases can produce two children identical to the parents, reducing the overall diversity of the population by introducing duplicates. 
+			
+			\texttt{crossoverDouble}: Extremely similar to the  \texttt{crossoverSingle} function, with the caveat being that two crossover points are generated. With the addition of a second pivot point on which to swap which parent is passing genes, the chances of producing children similar to the parents is reduced - assuming that the two parents are not already similar in terms of genes.
+			
+			\texttt{crossoverUniform}: Unlike the previous segment based crossovers, a uniform crossover function operates on a gene level. Each gene in a child is copied from one of the two parents depending on the value of a randomly generated number e.g. on the value of 0 the first parent's gene is used, on the value of 1 the second parent's gene is copied. Like the other crossover functions, \texttt{crossoverUniform} produces a set of mirrored children. This cross over method has the potential to produce the most diverse children from a set of parents. 
+			
+		\subsection{Mutation}
+			Mutation of chromosomes is yet another area of a genetic algorithm were diversity can be introduced. No form of mutation was provided, so a simple boundary mutation function was desinged. Witihin the algorthim presenetd, mutation was only applied to child chromosoenes produced by a cross over function.
+			
+			\texttt{mutateBoundary}: This mutation function operates over every gene in a chromasone, producing a random \texttt{double} between 0 and 1 for each one, if the double is less than a predetermined value (\texttt{mutateRate}) then the current gene is altered by adding  or subtracting a second predetermined value to it (\texttt{mutateChange}). The \texttt{}
+			
 			
 \section{Experiments \& Analysis}
 
