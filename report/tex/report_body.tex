@@ -1,14 +1,15 @@
 
 \section{Introduction}
 	\IEEEPARstart{T}{he} aim of this project was to investigate how the diversity of an genetic algorithm's population effects the performance of Multi-Layer Perception Neural Network trained by said algorithm. 
-	A substantial amount of research has already been conducted into how the effectiveness of Hyper-heuristic's can be improved by encouraging diversity in the individual sub-heuristics - this investigation was designed to asses if a similar approach to Hyper-heuristic diversity could be applied to an genetic algorithm to improve it's fitness
+	A substantial amount of research has already been conducted into how the effectiveness of Hyper-heuristic's can be improved by encouraging diversity in the individual sub-heuristics - this investigation was designed to asses if a similar approach to hyper-heuristic diversity could be applied to an genetic algorithm to improve it's fitness
 	
 \section{Approach}
 	Investigation was conducted by exploring how different types of Parent Selection, Child Crossover, Mutation, and Immigrant Injection can alter the overall diversity of an genetic algorithm's population - and how in turn that effects the overall fitness of the algorithm.
 	
 	\subsection{Background}
-		Stuff about hyper-heuristics goes here. Get those references, son.
-		\cite{Hong16112004} \cite{hart2017constructing}
+		Previous research has shown evidence that increasing the diversity of the individual heuristics in  a hyper-heuristic can improve the overall fitness of said hyper-heuristic\cite{Hong16112004} \cite{hart2017constructing}. This effect is caused by the way sub-heuristics of similar fitness will tend to operate upon data in a similar manner, inversely sub-heuristics of vastly different fitness will tend operate upon data in a vastly different behaviour. By creating a hyper-heuristic out of a number of randomly chosen sub-heuristics, the hyper-heuristic has a better chance of avoiding reaching a local maxima -as opposed to a hyper-heuristic comprising of a number of 'elite sub-heuristics' which may reach a local optima significantly faster.
+		
+		This projects aims to investigate if a similar approach can be taken in regards to genetic algorithms, by comparing operators that produce various levels of diversity in within the population of the algorithm.
 	
 	\subsection{Algorithm Design}
 		A simple genetic algorithm of similar style to supplied version was used throughout this investigation. Unless otherwise stated, a single generation of the algorithm was as follows:
@@ -78,13 +79,55 @@
 		
 		\texttt{geneMax} \& \texttt{geneMin}: The values of 5.0 and -5.0 were used respectively for the maxim and minimum possible values of gene for each chromosome. While the systematic altering and testing of these values could have led to a super solution - leaving them at the default values ensured the other test could be compared fairly.
 		
-		\texttt{hiddenNodes}: The number of nodes in the hidden layer was the one neural network parameter that was changed from the default. Preliminary testing indicated that when approximating functions A and B 5 hidden nodes produced the best result. When approximating function C however, 2 hidden nodes proved to be the most effective. These values were used in all future tests to ensure consistent and fair comparison. 
+		\texttt{hiddenNodes}: The number of nodes in the hidden layer was the second tunable parameter of the neural network. Once again, it was opted to leave this parameter at a predetermined value for all tests, in this case 5, for a number of reasons. Firstly, this investigation was more focused on the tuning of the genetic algorithm rather than the neural network and secondly, in order to produce an optimal result the parameter would potential have to be readjusted every time another variable was - leading to a enormous number of test needing to be run.
 		
-\section{Experiments \& Analysis}
-	What I did
+		%The number of nodes in the hidden layer was the one neural network parameter that was changed from the default. Preliminary testing indicated that when approximating functions A and B 5 hidden nodes produced the best result. When approximating function C however, 2 hidden nodes proved to be the most effective. These values were used in all future tests to ensure consistent and fair comparison. 
+		
+\section{Methodology}
+	\subsection{Experiment Parameters}
+		To ensure fare comparison, and to comply with the project specification, the following parameters were used for all tests - unless otherwise stated:
+		\begin{itemize}
+			\item Each algorithm was run for a maximum 10000 generations.
+			\item The average final fitness of 50 iterations was used to determine the effectiveness of algorithm.
+			\item Each iteration used a different seed reduce chance of identical executions.
+		\end{itemize}
+	
+	\subsection{Experiments}
+		With the generic parameters outlined, the following experiments were conducted:
+		\begin{itemize}
+			\item The effect of population size on overall fitness.
+			\item The effect of different selection methods on overall fitness.
+			\item The effect of different crossover methods on overall fitness.
+		\end{itemize}
+	
+		All experiments were conducted on each of the functions using the same parameters, bar number of hidden nodes. During the execution of experiments the parameters used and the best fitness of each generation were logged to a \texttt{.csv} file for ease of access and later analysis.
 
 \section{Results}
-	What I found
+	\subsection{Population Experiment}
+		This test was the first to be executed, and was executed as follows:
+		The test was run 50 times, starting at a population of 10 and increasing by 10 for each subsequent iteration i.e. the first test had a population of 10 and the final test had a population of 500. The \texttt{selectRandom} and \texttt{crossoverSingle} algorithm featuers were chosen for this test, in an attempt to reduce the chances of local maxima.
+		
+		As can be seen from Figures \ref{chart_pop_a}, \ref{chart_pop_b},  and \ref{chart_pop_c} as the population of each algorithm increases so to does the fitness improve. This is as we would expect, the larger population size, the more diverse the initial population reducing the algorithm's chances from reaching a local maxima. 
+		\begin{figure}[h]
+			\centering
+			\includegraphics[width = 0.5\textwidth]{pop_a}
+			\caption{A chart indicting the correlation between population and fitness for Function A.}
+			\label{chart_pop_a}
+		\end{figure} 
+
+		\begin{figure}[h]
+			\centering
+			\includegraphics[width = 0.5\textwidth]{pop_b}
+			\caption{A chart indicting the correlation between population and fitness for Function B.}
+			\label{chart_pop_b}
+		\end{figure}
+
+		\begin{figure}[h]
+			\centering
+			\includegraphics[width = 0.5\textwidth]{pop_c}
+			\caption{A chart indicting the correlation between population and fitness for Function C.}
+			\label{chart_pop_c}
+		\end{figure} 
 
 \section{Conclusion}
 	Summary
